@@ -3046,10 +3046,10 @@ AC_CONFIG_FILES([Makefile \
 		plugins/omdtls/Makefile \
 		contrib/mmdarwin/Makefile \
 		contrib/omhttp/Makefile \
-        contrib/fmhash/Makefile \
-        contrib/fmunflatten/Makefile \
-        contrib/fmpansanitizer/Makefile \
-        contrib/ffaup/Makefile \
+                contrib/fmhash/Makefile \
+                contrib/fmunflatten/Makefile \
+                contrib/fmpansanitizer/Makefile \
+                contrib/ffaup/Makefile \
 		contrib/pmsnare/Makefile \
 		contrib/pmpanngfw/Makefile \
 		contrib/pmaixforwardedfrom/Makefile \

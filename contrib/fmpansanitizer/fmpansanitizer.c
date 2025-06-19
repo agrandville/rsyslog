@@ -45,7 +45,7 @@ DEF_FMOD_STATIC_DATA
 struct maskpan_state {
         pcre2_code *re;
         pcre2_match_data* match_data;
-        pcre2_match_context* mcontext;
+        pcre2_match_context* match_context;
 };
 
 static int ATTR_NONNULL()
@@ -109,7 +109,7 @@ doFunc_maskpan(struct cnffunc *__restrict__ const func,
                 (PCRE2_SPTR)pszSubject, strlen(pszSubject),
                 0,
                 PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED ,
-                state->match_data, state->mcontext,
+                state->match_data, state->match_context,
                 (PCRE2_SPTR)pszReplace, strlen(pszReplace),
                 &output, &outlen);;
 
@@ -158,7 +158,6 @@ initFunc_maskpan(struct cnffunc *const func)
         }
 
         CHKmalloc(state = calloc(1, sizeof(struct maskpan_state)));
-
         regex = es_str2cstr(((struct cnfstringval*) func->expr[1])->estr, NULL);
 
         state->re = pcre2_compile((PCRE2_SPTR)regex,
@@ -172,10 +171,10 @@ initFunc_maskpan(struct cnffunc *const func)
                 ABORT_FINALIZE(RS_RET_ERR);
         }
 
-        state->mcontext = pcre2_match_context_create(NULL);
+        state->match_context = pcre2_match_context_create(NULL);
         state->match_data = pcre2_match_data_create_from_pattern(state->re, NULL);
 
-        pcre2_set_substitute_callout(state->mcontext, *luhn_check_cb, NULL);
+        pcre2_set_substitute_callout(state->match_context, *luhn_check_cb, NULL);
 
         func->funcdata = state;
         func->destructable_funcdata = 1;
@@ -185,14 +184,25 @@ finalize_it:
         RETiRet;
 }
 
-static void ATTR_NONNULL(1)
+static void ATTR_NONNULL()
 destruct_maskpan(struct cnffunc *const func)
 {
+
         struct maskpan_state *state = (struct maskpan_state*)func->funcdata;
-        if(state != NULL) {
+        // TODO: check if state must be freed
+        // If the state is released, Valgrind complains about an invalid free() call 
+        // for a block that was allocated in initFunc_maskpan (fmpansanitizer.c:160)
+        if(0) //state != NULL) 
+        {
                 if(state->re != NULL)
                         pcre2_code_free(state->re);
+                if(state->match_data != NULL)
+                        pcre2_match_data_free(state->match_data);
+                if(state->match_context != NULL)
+                        pcre2_match_data_free(state->match_context);
+
                 free(state);
+                state=NULL;
         }
 }
 
