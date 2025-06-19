@@ -485,7 +485,9 @@ if test "x$enable_fmpansanitizer" = "xyes"; then
                        PCRE2_CFLAGS=""
                        AC_SUBST(PCRE2_LIBS)
                        AC_SUBST(PCRE2_CFLAGS)
-               ], [AC_MSG_ERRORs([pcre2 headerss not found])])
+               ],
+	       [AC_MSG_ERROR([pcre2 headers not found])],
+       	       [#define PCRE2_CODE_UNIT_WIDTH 8])
        ], [AC_MSG_ERROR([libpcre2-8 not found])])
 fi
 AM_CONDITIONAL(ENABLE_FMPANSANITIZER, test x$enable_fmpansanitizer = xyes)
@@ -1243,19 +1245,15 @@ AC_ARG_ENABLE(libgcrypt,
         [enable_libgcrypt=yes]
 )
 if test "x$enable_libgcrypt" = "xyes"; then
-	AC_PATH_PROG([LIBGCRYPT_CONFIG],[libgcrypt-config],[no])
-        if test "x${LIBGCRYPT_CONFIG}" = "xno"; then
-           AC_MSG_FAILURE([libgcrypt-config not found in PATH])
-        fi
         AC_CHECK_LIB(
-		[gcrypt],
-        	[gcry_cipher_open],
-        	[LIBGCRYPT_CFLAGS="`${LIBGCRYPT_CONFIG} --cflags`"
-        	LIBGCRYPT_LIBS="`${LIBGCRYPT_CONFIG} --libs`"
-        	],
-        	[AC_MSG_FAILURE([libgcrypt is missing])],
-        	[`${LIBGCRYPT_CONFIG} --libs --cflags`]
-        	)
+	       [gcrypt],
+               [gcry_cipher_open],
+               [LIBGCRYPT_CFLAGS="`pkg-config --cflags libgcrypt`"
+               LIBGCRYPT_LIBS="`pkg-config --libs libgcrypt`"
+               ],
+               [AC_MSG_FAILURE([libgcrypt is missing])],
+               [`pkg-config --libs --cflags libgcrypt`]
+               )	     
 	AC_DEFINE([ENABLE_LIBGCRYPT], [1], [Indicator that LIBGCRYPT is present])
 fi
 AM_CONDITIONAL(ENABLE_LIBGCRYPT, test x$enable_libgcrypt = xyes)
@@ -3046,10 +3044,10 @@ AC_CONFIG_FILES([Makefile \
 		plugins/omdtls/Makefile \
 		contrib/mmdarwin/Makefile \
 		contrib/omhttp/Makefile \
-        contrib/fmhash/Makefile \
-        contrib/fmunflatten/Makefile \
-        contrib/fmpansanitizer/Makefile \
-        contrib/ffaup/Makefile \
+                contrib/fmhash/Makefile \
+                contrib/fmunflatten/Makefile \
+                contrib/fmpansanitizer/Makefile \
+                contrib/ffaup/Makefile \
 		contrib/pmsnare/Makefile \
 		contrib/pmpanngfw/Makefile \
 		contrib/pmaixforwardedfrom/Makefile \
