@@ -110,6 +110,10 @@ case "${host}" in
   ;;
   *-apple-*)
     AC_DEFINE([OS_APPLE], [1], [Indicator for APPLE OS])
+    EXTRA_LDFLAGS="-L/usr/local/lib -L/opt/homebrew/lib"
+    CFLAGS="$CFLAGS -I/usr/local/include -I/opt/homebrew/include"
+    CXXFLAGS="$CXXFLAGS -I/usr/local/include -I/opt/homebrew/include"
+    CPPFLAGS="$CPPFLAGS -I/usr/local/include -I/opt/homebrew/include"
     os_type="apple"
   ;;
   *-*-kfreebsd*)
@@ -476,12 +480,12 @@ AC_ARG_ENABLE(fmpansanitizer,
 )
 if test "x$enable_fmpansanitizer" = "xyes"; then
        AC_CHECK_LIB([pcre2-8], [pcre2_compile_8], [
-               AC_CHECK_HEADER([pcre.h], [
-                       PCRE_LIBS="-lpcre2-8"
-                       PCRE_CFLAGS=""
-                       AC_SUBST(PCRE_LIBS)
-                       AC_SUBST(PCRE_CFLAGS)
-               ], [AC_MSG_ERROR([pcre headers not found])])
+               AC_CHECK_HEADER([pcre2.h], [
+                       PCRE2_LIBS="-lpcre2-8"
+                       PCRE2_CFLAGS=""
+                       AC_SUBST(PCRE2_LIBS)
+                       AC_SUBST(PCRE2_CFLAGS)
+               ], [AC_MSG_ERRORs([pcre2 headerss not found])])
        ], [AC_MSG_ERROR([libpcre2-8 not found])])
 fi
 AM_CONDITIONAL(ENABLE_FMPANSANITIZER, test x$enable_fmpansanitizer = xyes)
